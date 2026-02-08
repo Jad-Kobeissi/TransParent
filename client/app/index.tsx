@@ -118,7 +118,7 @@ export default function Index() {
             </Svg>
           </View>
           <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-            Welcome To BACIncidents
+            Welcome To TransParent
           </Text>
           <Text style={{ color: colors.secondaryText, textAlign: "center" }}>
             Stay informed about your children's school activities and incidents
