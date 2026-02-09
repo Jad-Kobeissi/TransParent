@@ -28,9 +28,11 @@ export default function ChildIncidents() {
         setPage((prev) => prev + 1);
       })
       .catch((err) => {
-        alert("There was an error: " + err.response.data);
-        console.log(err.response.data);
-        setError(err.response.data || "An unexpected error occurred.");
+        const errorMsg =
+          err.response?.data || err.message || "An unexpected error occurred.";
+        alert("There was an error: " + errorMsg);
+        console.log(errorMsg);
+        setError(errorMsg);
       });
   };
   const fetchIncidents = async () => {
@@ -53,7 +55,9 @@ export default function ChildIncidents() {
         setPage((prev) => prev + 1);
       })
       .catch((err) => {
-        setError(err.response.data || "An unexpected error occurred.");
+        setError(
+          err.response?.data || err.message || "An unexpected error occurred.",
+        );
       });
   };
   useEffect(() => {

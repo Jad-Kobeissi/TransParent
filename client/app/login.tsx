@@ -95,11 +95,14 @@ export default function Login() {
                 password,
               })
               .then(async (res) => {
+                console.log(res);
+
                 await SecureStore.setItemAsync("token", res.data.token);
                 setParent(res.data.parent);
                 router.push("/(tabs)");
               })
               .catch((err) => {
+                console.log(err);
                 alert(err.response.data || "Error logging in");
               })
               .finally(() => setLoading(false));

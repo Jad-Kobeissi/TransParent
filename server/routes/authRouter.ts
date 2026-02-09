@@ -28,9 +28,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
         return res.status(500).send("BAC authentication failed.");
       }
     } catch (error: any) {
-      return res
-        .status(error.response.status)
-        .send(error.response.data.message);
+      return res.status(error.response.status).send(error.message);
     }
 
     let children: Array<{ id: string; class: string; learner: string }> = [];
@@ -51,9 +49,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
         .split(" ")
         [children.length - 1]?.toLocaleLowerCase() as string;
     } catch (error: any) {
-      return res
-        .status(error.response.status)
-        .send(error.response.data.message);
+      return res.status(error.response.status).send(error.message);
     }
 
     const parent = await prisma.parent.findFirst({
