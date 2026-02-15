@@ -110,7 +110,6 @@ function Features() {
 export default function Page() {
   return (
     <ScrollView style={styles.container}>
-      {console.log(process.env.EXPO_PUBLIC_API_URL) as any}
       <Nav />
       <Home />
       <Features />

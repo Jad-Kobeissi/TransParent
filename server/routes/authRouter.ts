@@ -4,7 +4,7 @@ import { prisma } from "../lib/prisma.js";
 import axios from "axios";
 import { sign } from "jsonwebtoken";
 import { compare, hash } from "bcrypt";
-import type { TChild } from "../types.js";
+import type { TChild, TParent } from "../types.js";
 
 export const authRouter = express.Router();
 
@@ -48,6 +48,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
       lastName = children[0]?.learner
         .split(" ")
         [children.length - 1]?.toLocaleLowerCase() as string;
+      console.log(lastName);
     } catch (error: any) {
       return res.status(error.response.status).send(error.message);
     }
@@ -62,36 +63,58 @@ authRouter.post("/login", async (req: Request, res: Response) => {
     });
 
     let dbChildren: Array<TChild> = (parent?.children as Array<TChild>) || [];
-
+    let newParent: any;
     if (!parent) {
-      const newParent = await prisma.parent.create({
+      const placeholderParent = await prisma.parent.create({
         data: {
           email: identifier,
           name: lastName,
         },
+        include: {
+          children: true,
+        },
       });
 
-      children.map(async (child) => {
+      (children.forEach(async (child) => {
         const newChild = await prisma.child.create({
           data: {
             name: ((child.learner.split(" ")[0] as string) +
               " " +
               child.learner.split(" ")[1]) as string as string,
-            parentId: newParent.id,
+            parentId: placeholderParent.id,
             grade: child.class,
           },
         });
-
         dbChildren.push(newChild as TChild);
-      });
+      }),
+        (newParent = await prisma.parent.findFirst({
+          where: {
+            email: identifier,
+          },
+          include: {
+            children: true,
+          },
+        })));
     }
 
     const token = await sign(
-      { id: parent?.id, children: dbChildren, parent, isAdmin: false },
+      {
+        id: parent?.id,
+        children: dbChildren,
+        parent: parent ? parent : newParent,
+        isAdmin: false,
+      },
       process.env.JWT_SECRET as string,
     );
 
-    return res.status(200).json({ bacToken, token, parent });
+    console.log("submitting: " + parent ? parent : newParent);
+
+    console.log("parent: " + parent ? parent : newParent);
+    console.log("childrenDb: " + dbChildren);
+
+    return res
+      .status(200)
+      .json({ bacToken, token, parent: parent ? parent : newParent });
   } catch (error) {
     return res.status(500).send((error as Error).message);
   }
@@ -106,7 +129,7 @@ authRouter.post("/createAdmin", async (req: Request, res: Response) => {
 
     // Check if admin already exists
     const existingAdmin = await prisma.admin.findFirst({
-      where: { username },
+      where: { identifier: username },
     });
     if (existingAdmin) {
       return res.status(400).send("Admin with this username already exists.");
@@ -114,8 +137,7 @@ authRouter.post("/createAdmin", async (req: Request, res: Response) => {
 
     const newAdmin = await prisma.admin.create({
       data: {
-        username,
-        password: await hash(password, 10),
+        identifier: username,
       },
     });
 

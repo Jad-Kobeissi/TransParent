@@ -22,8 +22,6 @@ export default function ChildIncidents() {
         },
       })
       .then((res) => {
-        console.log(res.data);
-
         setChild(res.data);
         setPage((prev) => prev + 1);
       })
@@ -31,7 +29,6 @@ export default function ChildIncidents() {
         const errorMsg =
           err.response?.data || err.message || "An unexpected error occurred.";
         alert("There was an error: " + errorMsg);
-        console.log(errorMsg);
         setError(errorMsg);
       });
   };

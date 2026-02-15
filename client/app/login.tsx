@@ -95,14 +95,16 @@ export default function Login() {
                 password,
               })
               .then(async (res) => {
-                console.log(res);
-
                 await SecureStore.setItemAsync("token", res.data.token);
                 setParent(res.data.parent);
+                console.log("parent: " + res.data.parent);
+                console.log("children: " + res.data.parent.children);
+
                 router.push("/(tabs)");
               })
               .catch((err) => {
-                console.log(err);
+                console.log("error: " + err);
+
                 alert(err.response.data || "Error logging in");
               })
               .finally(() => setLoading(false));

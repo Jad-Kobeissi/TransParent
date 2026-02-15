@@ -1,36 +1,47 @@
+export interface TAdmin {
+  id: number;
+  username: string;
+  password: string;
+}
+
+export interface TChild {
+  id: number;
+  name: string;
+  grade: string;
+  parentId: number;
+  Parent: TParent;
+  Incident: TIncident[];
+}
+
+export interface TIncident {
+  id: number;
+  title: string;
+  description: string;
+  childId: number;
+  occurredAt: Date;
+  severity: Severity;
+  type: Type;
+  child: TChild;
+}
+
+export interface TParent {
+  id: number;
+  name: string;
+  email: string;
+  child: TChild[];
+}
+export interface TAdmin {
+  id: number;
+  identifier: string;
+}
+
 enum Type {
   positive,
   negative,
   informational,
 }
-enum Category {
-  Warning,
-  Information,
-  Urgent,
-  Positive,
-}
-export interface TParent {
-  id: number;
-  name: string;
-  email: string;
-  children: TChild[];
-}
-export interface TChild {
-  id: number;
-  name: string;
-  grade: string;
-  parent: TParent;
-  parentId: number;
-  incidents: TIncident[];
-}
-export interface TIncident {
-  id: number;
-  title: string;
-  description: string;
-  category: Category;
-  child: TChild;
-  childId: number;
-  severity: number;
-  type: Type;
-  occurredAt: Date;
+enum Severity {
+  low,
+  medium,
+  high,
 }

@@ -1,56 +1,50 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+model Admin {
+  id         Int    @id @default(autoincrement())
+  identifier String @unique
+  Incidents Incident[]
+}
+
+model Incident {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  category    Category
+  childId     Int
+  occurredAt  DateTime
+  severity    Int?
+  Child       child    @relation(fields: [childId], references: [id])
+  adminId     Int
+  Admin       Admin    @relation(fields: [adminId], references: [id])
+}
+
+model Parent {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  child child[]
+}
+
+model child {
+  id       Int        @id @default(autoincrement())
+  name     String
+  grade    String
+  parentId Int
+  Incident Incident[]
+  Parent   Parent     @relation(fields: [parentId], references: [id])
+}
+
 enum Category {
   Warning
   Information
   Urgent
   Positive
-}
-enum Type {
-  positive
-  negative
-  informational
-}
-model Parent {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  children Child[]
-}
-model Child {
-  id Int @id @default(autoincrement())
-  name String
-  grade String
-  parent Parent @relation(fields: [parentId], references: [id])
-  parentId Int
-  Incidents Incident[]
-}
-model Incident {
-  id Int @id @default(autoincrement())
-  title String
-  description String
-  category Category
-  type Type 
-  child Child @relation(fields: [childId], references: [id])
-  childId Int
-  severity Int?
-  occurredAt DateTime
-}
-
-model Admin {
-  id Int @id @default(autoincrement())
-  username String @unique
-  password String
 }

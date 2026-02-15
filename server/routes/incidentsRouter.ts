@@ -1,6 +1,6 @@
 import express, { response, type Request, type Response } from "express";
 import { decode, verify } from "jsonwebtoken";
-import type { TJWT } from "../types.js";
+import type { TChild, TJWT } from "../types.js";
 import { prisma } from "../lib/prisma.js";
 import { isEmpty } from "../isEmpty.js";
 
@@ -15,7 +15,7 @@ incidentsRouter.get("/", async (req: Request, res: Response) => {
 
     const decoded = verify(authHeader, process.env.JWT_SECRET!) as TJWT;
 
-    const childrenIds = decoded.children.map((child) => child.id);
+    const childrenIds = decoded.children.map((child: TChild) => child.id);
 
     const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.limit) : 10;
@@ -30,7 +30,11 @@ incidentsRouter.get("/", async (req: Request, res: Response) => {
         occurredAt: "desc",
       },
       include: {
-        child: true,
+        child: {
+          include: {
+            parent: true,
+          },
+        },
       },
       take: limit,
       skip: offset,
@@ -57,7 +61,6 @@ incidentsRouter.post("/", async (req: Request, res: Response) => {
       !title ||
       !description ||
       !category ||
-      !type ||
       isEmpty([title, description, category])
     )
       return res.status(400).send("Missing required fields");
@@ -68,6 +71,10 @@ incidentsRouter.post("/", async (req: Request, res: Response) => {
     const child = await prisma.child.findUnique({
       where: {
         id: childId,
+      },
+      include: {
+        Incidents: true,
+        parent: true,
       },
     });
 
@@ -81,7 +88,6 @@ incidentsRouter.post("/", async (req: Request, res: Response) => {
         childId: child.id,
         category,
         severity,
-        type,
       },
       include: {
         child: true,

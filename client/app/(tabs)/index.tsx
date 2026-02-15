@@ -31,7 +31,6 @@ export default function Page() {
         setPage((prev) => prev + 1);
       })
       .catch((err) => {
-        console.log(err);
         setError(err.response.data || "Error fetching incidents");
       });
   };
@@ -45,8 +44,6 @@ export default function Page() {
     validateToken();
   }, []);
   useEffect(() => {
-    console.log(SecureStore.getItem("parent"));
-
     if (!context.parent) return;
     fetchIncidents();
   }, [context.parent]);
@@ -75,7 +72,7 @@ export default function Page() {
       >
         <View style={{ alignItems: "center", marginBottom: 20 }}>
           <Text style={{ fontSize: 24, fontWeight: 500 }}>
-            {context.parent.children.length}
+            {context.parent?.children.length}
           </Text>
           <Text style={{ color: colors.secondaryText, fontWeight: 500 }}>
             Children

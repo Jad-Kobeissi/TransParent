@@ -1,41 +1,53 @@
-enum Category {
-  Warning,
-  Information,
-  Urgent,
-  Positive,
+export interface TAdmin {
+  id: number;
+  username: string;
+  password: string;
 }
-enum Type {
-  positive,
-  negative,
-  informational,
+
+export interface TChild {
+  id: number;
+  name: string;
+  grade: string;
+  parentId: number;
+  Parent: TParent;
+  Incident: TIncident[];
 }
+
+export interface TIncident {
+  id: number;
+  title: string;
+  description: string;
+  childId: number;
+  occurredAt: Date;
+  severity: Severity;
+  type: Type;
+  child: TChild;
+}
+
 export interface TParent {
   id: number;
   name: string;
   email: string;
   children: TChild[];
 }
-export interface TChild {
+export interface TAdmin {
   id: number;
-  name: string;
-  grade: string;
-  parent: TParent;
-  parentId: number;
-  incidents: TIncident[];
+  identifier: string;
 }
-export interface TIncident {
-  id: number;
-  title: string;
-  description: string;
-  category: Category;
-  child: TChild;
-  childId: number;
-  type: Type;
-  occurredAt: Date;
+
+enum Type {
+  positive,
+  negative,
+  informational,
+}
+enum Severity {
+  low,
+  medium,
+  high,
 }
 export interface TJWT {
   id: number;
   children: TChild[];
-  parent: TParent;
+  parent: TParent | null;
   isAdmin: boolean;
 }
