@@ -30,9 +30,9 @@ incidentsRouter.get("/", async (req: Request, res: Response) => {
         occurredAt: "desc",
       },
       include: {
-        child: {
+        Child: {
           include: {
-            parent: true,
+            Parent: true,
           },
         },
       },
@@ -47,58 +47,7 @@ incidentsRouter.get("/", async (req: Request, res: Response) => {
     return res.status(500).send((error as Error).message);
   }
 });
-incidentsRouter.post("/", async (req: Request, res: Response) => {
-  try {
-    const authHeader = req.headers["authorization"]?.split(" ")[1] as string;
 
-    if (!authHeader || !verify(authHeader, process.env.JWT_SECRET!))
-      return res.status(401).send("Unauthorized");
-
-    const { childId, title, description, category, severity, type } = req.body;
-
-    if (
-      !childId ||
-      !title ||
-      !description ||
-      !category ||
-      isEmpty([title, description, category])
-    )
-      return res.status(400).send("Missing required fields");
-
-    if (severity > 5 || severity < 1)
-      return res.status(400).send("Severity must be between 1-5");
-
-    const child = await prisma.child.findUnique({
-      where: {
-        id: childId,
-      },
-      include: {
-        Incidents: true,
-        parent: true,
-      },
-    });
-
-    if (!child) return res.status(404).send("Child not found");
-
-    const incident = await prisma.incident.create({
-      data: {
-        title,
-        description,
-        occurredAt: new Date(),
-        childId: child.id,
-        category,
-        severity,
-      },
-      include: {
-        child: true,
-      },
-    });
-
-    return res.status(201).json(incident);
-  } catch (error) {
-    return res.status(500).send((error as Error).message);
-  }
-});
 incidentsRouter.get("/child/:id", async (req: Request, res: Response) => {
   try {
     const authHeader = req.headers["authorization"]?.split(" ")[1] as string;
@@ -114,7 +63,7 @@ incidentsRouter.get("/child/:id", async (req: Request, res: Response) => {
         childId: Number(id),
       },
       include: {
-        child: true,
+        Child: true,
       },
     });
 

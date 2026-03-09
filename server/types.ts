@@ -28,7 +28,7 @@ export interface TParent {
   id: number;
   name: string;
   email: string;
-  children: TChild[];
+  child: TChild[];
 }
 export interface TAdmin {
   id: number;

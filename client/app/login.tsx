@@ -98,7 +98,7 @@ export default function Login() {
                 await SecureStore.setItemAsync("token", res.data.token);
                 setParent(res.data.parent);
                 console.log("parent: " + res.data.parent);
-                console.log("children: " + res.data.parent.children);
+                console.log("children: " + res.data.parent.child);
 
                 router.push("/(tabs)");
               })

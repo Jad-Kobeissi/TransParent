@@ -58,11 +58,11 @@ authRouter.post("/login", async (req: Request, res: Response) => {
         email: identifier,
       },
       include: {
-        children: true,
+        child: true,
       },
     });
 
-    let dbChildren: Array<TChild> = (parent?.children as Array<TChild>) || [];
+    let dbChildren: Array<TChild> = (parent?.child as Array<TChild>) || [];
     let newParent: any;
     if (!parent) {
       const placeholderParent = await prisma.parent.create({
@@ -71,7 +71,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
           name: lastName,
         },
         include: {
-          children: true,
+          child: true,
         },
       });
 
@@ -92,7 +92,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
             email: identifier,
           },
           include: {
-            children: true,
+            child: true,
           },
         })));
     }
@@ -111,37 +111,12 @@ authRouter.post("/login", async (req: Request, res: Response) => {
 
     console.log("parent: " + parent ? parent : newParent);
     console.log("childrenDb: " + dbChildren);
+    console.log("jwt key: " + process.env.JWT_SECRET || "nigga");
+    
 
     return res
       .status(200)
       .json({ bacToken, token, parent: parent ? parent : newParent });
-  } catch (error) {
-    return res.status(500).send((error as Error).message);
-  }
-});
-
-authRouter.post("/createAdmin", async (req: Request, res: Response) => {
-  try {
-    const { username, password } = req.body;
-
-    if (!username || !password || isEmpty([username, password]))
-      return res.status(400).send("Username and password are required.");
-
-    // Check if admin already exists
-    const existingAdmin = await prisma.admin.findFirst({
-      where: { identifier: username },
-    });
-    if (existingAdmin) {
-      return res.status(400).send("Admin with this username already exists.");
-    }
-
-    const newAdmin = await prisma.admin.create({
-      data: {
-        identifier: username,
-      },
-    });
-
-    return res.status(201).json({ admin: newAdmin });
   } catch (error) {
     return res.status(500).send((error as Error).message);
   }

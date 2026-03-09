@@ -72,7 +72,7 @@ export default function Page() {
       >
         <View style={{ alignItems: "center", marginBottom: 20 }}>
           <Text style={{ fontSize: 24, fontWeight: 500 }}>
-            {context.parent?.children.length}
+            {context.parent?.child.length}
           </Text>
           <Text style={{ color: colors.secondaryText, fontWeight: 500 }}>
             Children

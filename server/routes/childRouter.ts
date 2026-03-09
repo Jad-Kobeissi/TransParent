@@ -16,8 +16,8 @@ childRouter.get("/:id", async (req, res) => {
     const child = await prisma.child.findUnique({
       where: { id: Number(id) },
       include: {
-        Incidents: true,
-        parent: true,
+        Incident: true,
+        Parent: true,
       },
     });
 

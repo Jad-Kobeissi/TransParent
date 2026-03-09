@@ -49,7 +49,7 @@ export default function Profile() {
         <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 10 }}>
           My Children:{" "}
         </Text>
-        {parent?.children.map((c) => (
+        {parent?.child.map((c) => (
           <TouchableOpacity
             onPress={() =>
               router.navigate({
